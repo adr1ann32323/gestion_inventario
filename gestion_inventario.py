@@ -2,82 +2,78 @@ from datetime import datetime
 #------------------------------------------------------------------------------------
 def validate_Product():#
     while True:
-        product = input("Ingrese el numero identificador del producto (solo números positivos, no inicia en 0, mínimo 3 digitos o si deseas cancelar solo escribe: cancel): ").strip()
+        product = input("Enter the product identifier number (only positive numbers, not starting with 0, at least 3 digits, or type 'cancel' to cancel): ").strip()
 
         if product == "cancel":
-            print("\033[91mProceso cancelado\033[0m")
+            print("\033[91mProcess canceled\033[0m")
             break
         elif not product.isdigit():
-            print("Error: El documento debe contener solo números.")
+            print("Error: The identifier must contain only numbers.")
         elif product.startswith('0'):
-            print("Error: El documento no debe comenzar con 0.")
+            print("Error: The identifier must not start with 0.")
         elif len(product) < 3:
-            print("Error: El documento debe tener al menos 3 digitos.")
+            print("Error: The identifier must have at least 3 digits.")
         else:
             return product
 #------------------------------------------------------------------------------------
-"""Valida que el numero identificador ingresado cumpla con los requisitos minimos (numeros positivos, sin ceros iniciales, minimo 3 digitos, ningun tipo de caracter)."""
+"""Validates that the entered identifier meets the minimum requirements (positive numbers, no leading zeros, at least 3 digits, no characters)."""
 def register(inventory,product_Identifier):
     author = input("Enter author: ").strip().lower()
     product_name = input("Enter product name: ").strip().lower()
     category= input("Enter category: ").strip().lower()
 
-
     while not author or not product_name or not category:
-        print("Los espacios no pueden estar vacios.")
+        print("Fields cannot be empty.")
         author = input("Enter author: ").strip().lower()
         product_name = input("Enter product name: ").strip().lower()
         category= input("Enter category").strip().lower()
     while True:
         try:
-            
             price = float(input("Enter price: "))
             stock = int(input("Enter stock quantity: "))
-            
             if price <=0 or stock <=0:
-                print("Valores invalidos,No pueden ser negativos y la cantidad debe ser un numero entero")
-            
+                print("Invalid values. They cannot be negative and the quantity must be a positive integer.")
             else:
                 inventory[product_Identifier] = {
                     "product": product_name,
                     "author": author,
-                    "categoria": category,
+                    "category": category,
                     "price": price,
                     "stock": stock }
-                print("\n\033[92mProceso realizado correctamente.\033[0m")
+                print("\n\033[92mProcess completed successfully.\033[0m")
                 break
         except ValueError:
-            print("datos invalidos, no pueden haber espacios vacios, la cantidad debe ser un numero entero positivo.")
+            print("Invalid data. Fields cannot be empty and quantity must be a positive integer.")
 
 #------------------------------------------------------------------------------------
-"""Valida que el producto se encuentre en el inventario y si lo esta muestra todos sus datos"""
+"""Validates that the product is in the inventory and if so, displays all its data"""
 def show_products(inventory,consult_product):
     if not consult_product in inventory:
-        print("\033[91mElproducto no esta registrado.\033[0m")
+        print("\033[91mThe product is not registered.\033[0m")
     else:
         total= inventory[consult_product]['price'] * inventory[consult_product]['stock']
-        print(f"\nId: {consult_product}")
-        print(f"Author: {inventory[consult_product]['author']}")
-        print(f"Product: {inventory[consult_product]['product']}")
-        print(f"category: {inventory[consult_product]['category']}")
-        print(f"Price: {inventory[consult_product]['price']}")
-        print(f"Stock: {inventory[consult_product]['stock']}")
+        print(f"\nId: {consult_product} | "
+            f"Author: {inventory[consult_product]['author']} | "
+            f"Product: {inventory[consult_product]['product']} | "
+            f"Category: {inventory[consult_product]['category']} | "
+            f"Price: {inventory[consult_product]['price']} | "
+            f"Stock: {inventory[consult_product]['stock']}")
 
         print(f'Total value in the products: {total:.2f}')
 #------------------------------------------------------------------------------------
-"""Valida que el producto este en el inventario y si lo esta llama a la funcion "register()" para actualizar"""
+"""Validates that the product is in the inventory and if so, calls the 'register()' function to update"""
 def update_Products(inventory,update_product):
     if not update_product in inventory:
-        print("\033[91mElproducto no esta registrado.\033[0m")
+        print("\033[91mThe product is not registered.\033[0m")
     else:
         register(inventory,update_product)
 #------------------------------------------------------------------------------------
-#Elimina completamente un producto del sistema.
+#Completely removes a product from the system.
 def delete_product(inventory,delete):
     if not delete in inventory:
-        print("\033[91mElproducto no esta registrado.\033[0m")
+        print("\033[91mThe product is not registered.\033[0m")
     else:
-        print(f'\033[92mEl producto "{inventory[delete]['product']}" se elimino correctamente.\033[0m')
+        print(f'\033[92mThe product "{inventory[delete]["product"]}" was deleted successfully.\033[0m')
         inventory.pop(delete)
 #------------------------------------------------------------------------------------
 
@@ -86,24 +82,24 @@ percentage_discount = 0.1
 
 def register_Sale(inventory, id_product):
     if not id_product in inventory:
-        print("\033[91mEl producto no está registrado.\033[0m")
+        print("\033[91mThe product is not registered.\033[0m")
     else:
         try:
-            customer = input("Ingrese cliente: ").strip().lower()
-            stock = int(input("Ingrese cantidad a vender: "))
+            customer = input("Enter customer: ").strip().lower()
+            stock = int(input("Enter quantity to sell: "))
 
             while not customer:
-                print("El nombre del cliente no puede estar vacío.")
-                customer = input("Ingrese cliente: ").strip().lower()
-                stock = int(input("Ingrese cantidad a vender: "))
+                print("Customer name cannot be empty.")
+                customer = input("Enter customer: ").strip().lower()
+                stock = int(input("Enter quantity to sell: "))
 
             if stock <= 0:
-                print("La cantidad debe ser mayor a 0")
+                print("Quantity must be greater than 0.")
             elif stock > inventory[id_product]["stock"]:
-                print("No hay suficiente stock disponible.")
+                print("Not enough stock available.")
                 return
             else:
-                # Descontar stock vendido
+                # Deduct sold stock
                 inventory[id_product]["stock"] -= stock
 
                 unit_price = inventory[id_product]["price"]
@@ -115,7 +111,7 @@ def register_Sale(inventory, id_product):
                 else:
                     apply_discount = "No"
 
-                # Calcular descuento solo si aplica
+                # Calculate discount only if applicable
                 if apply_discount == "yes":
                     discount = total_gross * percentage_discount
                 else:
@@ -123,7 +119,7 @@ def register_Sale(inventory, id_product):
 
                 total_neto = total_gross - discount
 
-                # Guardar la venta
+                # Save the sale
                 sale = {
                     "customer": customer,
                     "producto_id": id_product,
@@ -134,23 +130,23 @@ def register_Sale(inventory, id_product):
                     "total_neto": total_neto
                 }
                 sales.append(sale)
-                print("Venta registrada correctamente.")
+                print("Sale registered successfully.")
         except ValueError:
-            print("Error: datos no válidos.")
+            print("Error: Invalid data.")
 #------------------------------------------------------------------------------------------
-#Muestra todas las ventas realizadas
+#Shows all registered sales
 def show_sales(sales):
 
     if len(sales) == 0:
-        print("No hay ventas registradas")
+        print("No sales registered.")
     else:
-        print("--- Lista de Ventas Registradas ---")
+        print("--- List of Registered Sales ---")
         for sale in sales:
             product = inventory[sale["producto_id"]]
-            print(f"Cliente: {sale['customer']} | Producto: {product['product']} | "
-                f"Cantidad: {sale['stock']} | Fecha: {sale['fecha']} | "
-                f"Descuento: {sale['apply_discount']} | "
-                f"Ingreso Bruto: {sale['total_gross']:.2f} | Ingreso Neto: {sale['total_neto']:.2f}")
+            print(f"Customer: {sale['customer']} | Product: {product['product']} | "
+                f"Quantity: {sale['stock']} | Date: {sale['fecha']} | "
+                f"Discount: {sale['apply_discount']} | "
+                f"Gross Income: {sale['total_gross']:.2f} | Net Income: {sale['total_neto']:.2f}")
 
 
 
@@ -166,17 +162,17 @@ inventory= {
 sales= []
 #------------------------------------------------------------------------------------
 while True:
-    print("\n\033[92m-----------------inventory management-------------\033[0m\n")
+    print("\n\033[92m-----------------Inventory Management-------------\033[0m\n")
     print("\033[94mMAIN MENU.\033[0m\n")
     print("1- Register product.")
     print("2- Query product.")
     print("3- Update product.")
     print("4- Delete product.")
     print("5- Register sale.")
-    print("6. show sales")
+    print("6- Show sales.")
     print("7- Exit the program.\n")
     
-    option = input("\033[93mEnter the number between 1 and 5, of the option you wish to perform: \033[0m")
+    option = input("\033[93mEnter the number between 1 and 7, of the option you wish to perform: \033[0m")
 
     
     match option:
@@ -189,7 +185,7 @@ while True:
                     
 
                 elif product_Identifier in inventory:
-                    print("\033[91mEl producto ya está registrado.\033[0m")
+                    print("\033[91mThe product is already registered.\033[0m")
                     
             case "2":
                 print("\n\033[94mQuery product.\033[0m")
